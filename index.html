@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upside Down Family Therapy — Redesign</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="main.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        green: {
+          25:'#FAFDE5',50:'#F4F9E8',100:'#E5F2CB',200:'#D0E8A0',300:'#B5D86E',
+          400:'#9BC847',500:'#8DC63F',600:'#6BAF2D',700:'#4E9420',800:'#3A7A18',900:'#2A5A10'
+        },
+        blue: {
+          50:'#EBF2F9',100:'#D1E2EF',200:'#A8C4DD',300:'#7FA5CA',400:'#5A88B4',
+          500:'#47709D',600:'#3A6D9E',700:'#2D5B89',800:'#234B73',900:'#1A3A5C'
+        },
+        neutral: {
+          50:'#F5F7F5',100:'#E8ECE8',200:'#D5DCD5',300:'#B5BEB5',400:'#95A195',
+          500:'#748274',600:'#5A655A',700:'#404940',800:'#2C332C',900:'#1A1E1A'
+        },
+        cream:'#FDFDF8'
+      },
+      fontFamily: {
+        display: ['Fraunces','Georgia','serif'],
+        body: ['DM Sans','-apple-system','sans-serif']
+      },
+      boxShadow: {
+        sm:'0 1px 3px rgba(26,30,26,.06),0 1px 2px rgba(26,30,26,.04)',
+        md:'0 4px 12px rgba(26,30,26,.08),0 2px 4px rgba(26,30,26,.04)',
+        lg:'0 12px 32px rgba(26,30,26,.1),0 4px 8px rgba(26,30,26,.04)',
+        xl:'0 24px 56px rgba(26,30,26,.12),0 8px 16px rgba(26,30,26,.04)',
+        green:'0 4px 16px rgba(141,198,63,.3)'
+      },
+      borderRadius: {
+        sm:'6px',md:'10px',lg:'16px',xl:'24px','2xl':'32px'
+      },
+      fontSize: {
+        hero:['clamp(2.5rem,4vw,3.75rem)',{lineHeight:'1.15'}],
+        h2:['clamp(1.625rem,2.5vw,2.25rem)',{lineHeight:'1.3'}],
+        h3:['clamp(1.25rem,2vw,1.5rem)',{lineHeight:'1.3'}],
+        h4:'1.125rem',
+        'body-lg':'1.125rem',
+        body:'1rem',
+        'body-sm':'0.875rem',
+        caption:'0.8125rem',
+        overline:'0.75rem'
+      },
+      transitionTimingFunction: {
+        out:'cubic-bezier(.22,1,.36,1)',
+        'out-back':'cubic-bezier(0.34,1.56,0.64,1)',
+        'out-elastic':'cubic-bezier(0.68,-0.55,0.265,1.55)',
+        spring:'cubic-bezier(0.175,0.885,0.32,1.275)'
+      },
+      transitionDuration: {
+        350:'350ms',
+        400:'400ms'
+      },
+      keyframes: {
+        float: {
+          '0%,100%':{transform:'translateY(0)'},
+          '50%':{transform:'translateY(-8px)'}
+        },
+        fadeInUp: {
+          from:{opacity:'0',transform:'translateY(28px)'},
+          to:{opacity:'1',transform:'translateY(0)'}
+        },
+        scaleIn: {
+          from:{opacity:'0',transform:'scale(0.96)'},
+          to:{opacity:'1',transform:'scale(1)'}
+        },
+        slideUp: {
+          from:{opacity:'0',transform:'translateY(16px)'},
+          to:{opacity:'1',transform:'translateY(0)'}
+        }
+      },
+      animation: {
+        float:'float 4.5s ease-in-out infinite',
+        fadeInUp:'fadeInUp 0.7s cubic-bezier(0.22,1,0.36,1) both',
+        scaleIn:'scaleIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both',
+        slideUp:'slideUp 0.6s cubic-bezier(0.22,1,0.36,1) both'
+      }
+    }
+  }
+}
+</script>
+<style type="text/tailwind">
+@layer base {
+  *,*::before,*::after { box-sizing:border-box; margin:0; padding:0; }
+  html { scroll-behavior:smooth; -webkit-font-smoothing:antialiased; }
+  body { font-family:'DM Sans',-apple-system,sans-serif; }
+  img { max-width:100%; display:block; }
+  p { font-family:'Inter',-apple-system,sans-serif; }
+  a { text-decoration:none; color:inherit; }
+  button { border:none; background:none; cursor:pointer; font-family:inherit; }
+  a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+    outline:3px solid #1A3A5C;
+    outline-offset:3px;
+  }
+}
+@layer components {
+  /* Leaf accent */
+  .leaf { display:inline-block; width:8px; height:8px; background:#9BC847; border-radius:0 50% 50% 50%; transform:rotate(-45deg); }
+
+  /* Blob */
+  .blob { position:absolute; border-radius:50%; filter:blur(80px); pointer-events:none; }
+
+  /* Hero background treatment */
+  .hero-bg-photo {
+    position:absolute;
+    inset:0;
+    background-image:url('images/aaron-burden-1zR3WNSTnvY-unsplash.jpg');
+    background-size:cover;
+    background-position:center 38%;
+    filter:blur(22px) saturate(1.08);
+    transform:scale(1.12);
+    transform-origin:center;
+  }
+  .hero-bg-wash {
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 14% 22%, rgba(235,242,249,0.85) 0%, rgba(235,242,249,0.45) 32%, rgba(255,255,255,0) 58%),
+      radial-gradient(circle at 88% 16%, rgba(229,242,203,0.72) 0%, rgba(229,242,203,0.25) 30%, rgba(255,255,255,0) 60%),
+      linear-gradient(135deg, rgba(255,255,255,0.86) 0%, rgba(244,249,232,0.7) 45%, rgba(235,242,249,0.74) 100%);
+  }
+  .hero-bg-vignette {
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at center, rgba(255,255,255,0) 45%, rgba(26,30,26,0.22) 100%),
+      linear-gradient(to bottom, rgba(255,255,255,0.46), rgba(255,255,255,0.14));
+    pointer-events:none;
+  }
+
+  /* Hamburger lines */
+  .hamburger-line { display:block; width:20px; height:2px; background:#1A1E1A; border-radius:1px; position:relative; transition:all .3s ease; }
+  .hamburger-line::before,.hamburger-line::after { content:''; position:absolute; width:100%; height:2px; background:#1A1E1A; border-radius:1px; left:0; transition:all .3s ease; }
+  .hamburger-line::before { top:-6px; }
+  .hamburger-line::after { top:6px; }
+  .header--menu-open .hamburger-line { background:transparent; }
+  .header--menu-open .hamburger-line::before { top:0; transform:rotate(45deg); }
+  .header--menu-open .hamburger-line::after { top:0; transform:rotate(-45deg); }
+
+  /* Mobile nav open state */
+  .header--menu-open { z-index:9999 !important; }
+  .mobile-nav { pointer-events:none; }
+  .header--menu-open .mobile-nav { opacity:1; visibility:visible; transform:translateY(0); pointer-events:auto; }
+  .header--menu-open .mobile-nav-link { opacity:1; transform:translateY(0); }
+  .header--menu-open .mobile-nav-link:nth-child(1) { transition-delay:.05s; }
+  .header--menu-open .mobile-nav-link:nth-child(2) { transition-delay:.08s; }
+  .header--menu-open .mobile-nav-link:nth-child(3) { transition-delay:.11s; }
+  .header--menu-open .mobile-nav-link:nth-child(4) { transition-delay:.14s; }
+  .header--menu-open .mobile-nav-link:nth-child(5) { transition-delay:.17s; }
+  .header--menu-open .mobile-nav-link:nth-child(6) { transition-delay:.2s; }
+  .header--menu-open .mobile-nav-link:nth-child(7) { transition-delay:.23s; }
+  .header--menu-open .mobile-phone { display:flex; }
+
+  /* Fallback visibility for mobile menu button */
+  .menu-toggle { display:flex; }
+  @media (min-width:768px) { .menu-toggle { display:none !important; } }
+
+  /* FAQ chevron rotation */
+  .faq-item[open] summary svg { transform:rotate(180deg); }
+
+  /* Form select arrow */
+  .form-select-arrow {
+    appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%237FA5CA' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 16px center;
+    padding-right:40px !important;
+  }
+
+  /* Service card top border on hover */
+  .service-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+    background:#9BC847; opacity:0; transition:opacity 250ms;
+  }
+  .service-card:hover::before { opacity:1; }
+
+  /* Details marker removal */
+  summary::-webkit-details-marker { display:none; }
+  summary { list-style:none; }
+
+  /* Scroll CTA */
+  .scroll-cta.visible { display:flex; }
+  @media (prefers-reduced-motion: reduce) {
+    *,*::before,*::after { animation:none !important; transition:none !important; }
+    html { scroll-behavior:auto; }
+  }
+
+  /* ——— Webflow-style micro-interactions ——— */
+  /* Primary / CTA buttons: lift, glow, press */
+  .btn-cta {
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, background-color 0.25s ease;
+  }
+  .btn-cta:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(58,109,158,0.35);
+  }
+  .btn-cta:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+  }
+
+  .btn-cta-green {
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, background-color 0.25s ease;
+  }
+  .btn-cta-green:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 12px 28px rgba(42,90,16,0.35);
+  }
+  .btn-cta-green:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
+  }
+
+  /* Secondary / outline buttons */
+  .btn-outline {
+    transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
+  }
+  .btn-outline:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(127,165,202,0.2);
+  }
+  .btn-outline:active {
+    transform: translateY(0) scale(0.99);
+  }
+
+  .btn-interactive,
+  .btn-cta,
+  .btn-cta-green,
+  .btn-outline {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  @media (hover:hover) {
+    .btn-interactive:hover { transform: translateY(-2px); }
+  }
+  .btn-interactive:active { transform: translateY(0); }
+  .btn-ripple {
+    position: absolute;
+    border-radius: 9999px;
+    transform: translate(-50%, -50%) scale(0);
+    background: rgba(255,255,255,0.38);
+    pointer-events: none;
+    animation: btn-ripple 560ms ease-out forwards;
+  }
+  @keyframes btn-ripple {
+    to {
+      transform: translate(-50%, -50%) scale(2.8);
+      opacity: 0;
+    }
+  }
+
+  /* Nav links: pill expand + slight scale */
+  .nav-pill {
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), background-color 0.2s ease, color 0.2s ease;
+  }
+  .nav-pill:hover {
+    transform: scale(1.05);
+  }
+
+  /* Service cards: lift, shadow, top bar + icon pop */
+  .service-card {
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s ease, border-color 0.3s ease;
+  }
+  .service-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(26,30,26,0.12);
+  }
+  .service-card::before {
+    transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .service-card:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  .service-card .service-icon {
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .service-card:hover .service-icon {
+    transform: scale(1.08);
+  }
+
+  /* Value / insurance cards */
+  .card-lift {
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease, border-color 0.25s ease;
+  }
+  .card-lift:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 32px rgba(26,30,26,0.1);
+  }
+
+  /* FAQ: smooth chevron + summary hover */
+  .faq-item summary {
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+  .faq-item summary:hover {
+    color: #4E9420;
+  }
+  .faq-item summary svg {
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .faq-item[open] summary svg {
+    transform: rotate(180deg);
+  }
+
+  /* Hero badges: subtle scale + shadow on hover */
+  .hero-badge {
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.35s ease;
+  }
+  .hero-badge:hover {
+    transform: scale(1.04) translateY(-2px);
+    box-shadow: 0 12px 24px rgba(26,30,26,0.15);
+  }
+
+  /* Hero image container: subtle scale on hover */
+  .hero-img-wrap {
+    transition: transform 0.6s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.5s ease;
+  }
+  .hero-img-wrap:hover {
+    transform: scale(1.02);
+    box-shadow: 0 24px 48px rgba(26,30,26,0.18);
+  }
+
+  /* Social / icon buttons */
+  .icon-btn {
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), background-color 0.2s ease;
+  }
+  .icon-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+  }
+  .icon-btn:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Footer links */
+  .footer-link {
+    transition: color 0.2s ease, transform 0.2s ease;
+  }
+  .footer-link:hover {
+    color: rgb(163, 230, 53);
+    transform: translateX(4px);
+  }
+
+  /* Form focus: smooth ring expand */
+  .input-focus-ring input:focus,
+  .input-focus-ring select:focus,
+  .input-focus-ring textarea:focus {
+    transition: box-shadow 0.3s cubic-bezier(0.34,1.56,0.64,1), border-color 0.2s ease, background-color 0.2s ease;
+  }
+
+  /* Scroll CTA: slide up with spring when visible */
+  .scroll-cta {
+    transition: transform 0.5s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease, box-shadow 0.35s ease;
+  }
+  .scroll-cta.visible {
+    animation: slideUpCta 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes slideUpCta {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section scroll-in (class added by JS) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(32px);
+    transition: opacity 0.7s cubic-bezier(0.22,1,0.36,1), transform 0.7s cubic-bezier(0.22,1,0.36,1);
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal.reveal-delay-1 { transition-delay: 0.08s; }
+  .reveal.reveal-delay-2 { transition-delay: 0.16s; }
+  .reveal.reveal-delay-3 { transition-delay: 0.24s; }
+  .reveal.reveal-delay-4 { transition-delay: 0.32s; }
+}
+</style>
+<style>
+/* Force paragraph font to Inter across all cascades */
+p {
+  font-family: 'Inter', -apple-system, sans-serif !important;
+}
+
+/* Fallback hamburger styles (runtime-independent from Tailwind processing) */
+.hamburger-line {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #1A1E1A;
+  border-radius: 1px;
+  position: relative;
+  transition: all .3s ease;
+}
+.hamburger-line::before,
+.hamburger-line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #1A1E1A;
+  border-radius: 1px;
+  transition: all .3s ease;
+}
+.hamburger-line::before { top: -6px; }
+.hamburger-line::after { top: 6px; }
+#header.header--menu-open .hamburger-line { background: transparent; }
+#header.header--menu-open .hamburger-line::before { top: 0; transform: rotate(45deg); }
+#header.header--menu-open .hamburger-line::after { top: 0; transform: rotate(-45deg); }
+</style>
+</head>
+<body class="text-body leading-relaxed text-neutral-950 bg-white overflow-x-hidden">
+
+<!-- HEADER -->
+<header class="fixed top-0 inset-x-0 z-[2000] bg-white/[.92] backdrop-blur-[16px] border-b border-neutral-200/50 transition-shadow" id="header">
+<div class="relative flex items-center justify-between h-16 md:h-[72px] max-w-[1200px] mx-auto px-5 md:px-8">
+  <a href="#hero" class="flex items-center gap-3">
+    <img class="logo" src="images/UDT Logo.png" alt="Upside Down Family Therapy Logo" title="Upside Down Family Therapy">
+    <!-- <div class="w-10 h-10 bg-green-500 rounded-md flex items-center justify-center text-white font-display font-bold text-lg rotate-180">U</div>
+    <div class="font-display font-semibold text-[1.05rem] text-neutral-900 leading-tight">Upside Down<span class="block text-[.72rem] font-normal text-neutral-500 tracking-wide font-body">Family Therapy</span></div> -->
+  </a>
+
+  <!-- Desktop Nav -->
+  <nav class="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
+    <a href="#services" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">Services</a>
+    <a href="#about" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">About</a>
+    <a href="#expect" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">What to Expect</a>
+    <a href="#therapist" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">Meet Emily</a>
+    <a href="#insurance" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">Insurance</a>
+    <a href="#contact" class="nav-pill text-body-sm font-medium text-neutral-700 px-4 py-2 rounded-full hover:text-green-900 hover:bg-green-50">Contact</a>
+    <!-- <a href="#" class="text-body-sm font-normal text-neutral-400 px-4 py-2 rounded-full transition-all duration-150 ease-out hover:text-green-900 hover:bg-green-50">Shop</a> -->
+  </nav>
+
+  <!-- Mobile Nav (hidden by default, shown via JS class) -->
+  <nav id="mobileNav" class="mobile-nav md:hidden flex flex-col items-stretch fixed top-16 left-0 right-0 bg-white px-6 py-4 z-[9999] shadow-lg max-h-[calc(100dvh-64px)] overflow-y-auto opacity-0 invisible -translate-y-2 transition-all duration-300 ease-in-out" role="navigation" aria-label="Mobile navigation">
+    <a href="#services" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">Services</a>
+    <a href="#about" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">About</a>
+    <a href="#expect" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">What to Expect</a>
+    <a href="#therapist" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">Meet Emily</a>
+    <a href="#insurance" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">Insurance</a>
+    <a href="#contact" class="mobile-nav-link text-body font-medium text-neutral-700 py-3 px-4 border-b border-neutral-100 opacity-0 -translate-y-1 transition-all duration-[250ms] ease-in-out hover:text-green-900 hover:bg-green-50">Contact</a>
+    <a href="tel:6623384988" class="mobile-phone hidden items-center justify-center gap-2 py-4 text-body-sm font-medium text-neutral-600">
+      <svg class="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      (662) 338-4988
+    </a>
+  </nav>
+
+  <div class="hidden md:flex items-center gap-4">
+    <a href="tel:6623384988" class="text-body-sm font-medium text-neutral-600 flex items-center gap-2">
+      <svg class="w-4 h-4 text-green-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      (662) 338-4988
+    </a>
+  </div>
+
+  <button id="menuToggle" class="menu-toggle md:hidden flex w-10 h-10 items-center justify-center hover:bg-neutral-50/95 relative z-[100] hover:shadow-sm" aria-label="Open menu" aria-expanded="false"><span class="hamburger-line"></span></button>
+</div>
+</header>
+<div class="h-16 md:h-[72px]" aria-hidden="true"></div>
+
+<main id="main-content">
+<!-- HERO -->
+<section class="relative isolate py-12 md:py-20 md:pb-24 overflow-hidden" id="hero">
+<div class="hero-bg-photo -z-[3]" aria-hidden="true"></div>
+<div class="hero-bg-wash -z-[2]" aria-hidden="true"></div>
+<div class="hero-bg-vignette -z-[1]" aria-hidden="true"></div>
+<div class="blob w-[600px] h-[600px] bg-green-300 -top-[200px] -right-[100px] opacity-[.18] absolute"></div>
+<div class="blob w-[400px] h-[400px] bg-blue-300 -bottom-[100px] -left-[100px] opacity-[.18] absolute"></div>
+<div class="max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center relative z-[1]">
+  <div class="animate-fadeInUp">
+    <div class="inline-flex items-center gap-2 bg-white border border-green-200 px-4 py-2 rounded-full text-caption font-medium text-green-900 mb-6 shadow-sm">
+      <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Serving Starkville, Mississippi &amp; surrounding areas
+    </div>
+    <h1 class="font-display text-hero font-medium text-neutral-900 mb-6">"Play is a child's natural medium for self-expression"<br><em class="italic text-green-900">— Virginia Axline</em></h1>
+    <p class="text-body leading-[1.75] text-neutral-600 mb-8 max-w-[440px]">Play Therapy, Expressive Art Therapy, and Parent Consultation — because play is a child's natural language.</p>
+    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4 mb-10">
+      <a href="#contact" class="btn-interactive btn-cta inline-flex items-center justify-center gap-2 font-body font-semibold text-body px-10 py-5 rounded-full bg-blue-600 text-white shadow-[0_4px_16px_rgba(58,109,158,.3)] hover:bg-blue-700 text-center">Schedule an Appointment</a>
+      <a href="tel:6623384988" class="btn-interactive btn-outline inline-flex items-center justify-center gap-2 font-body font-semibold text-body px-10 py-5 rounded-full bg-white text-blue-700 border-2 border-blue-300 hover:bg-blue-50 hover:border-blue-500 text-center">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        Call Emily
+      </a>
+    </div>
+  </div>
+  <div class="relative flex justify-center">
+    <div class="hero-img-wrap relative w-full max-w-[340px] md:max-w-none md:w-[460px] h-[380px] md:h-[520px] rounded-2xl overflow-hidden shadow-xl">
+      <img src="assets/hero-crayons.png" alt="Child playing with crayons" class="w-full h-full object-cover" width="460" height="520" />
+    </div>
+    <div class="hero-badge absolute bottom-4 md:bottom-8 left-2 md:-left-6 bg-white p-3 md:p-4 md:px-5 rounded-lg shadow-lg flex items-center gap-3 z-[2]">
+      <div class="w-10 h-10 bg-blue-50 rounded-md flex items-center justify-center">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2D5B89" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </div>
+      <div class="text-body-sm font-semibold text-neutral-800 leading-tight">Licensed &amp; Certified<span class="block text-caption font-normal text-neutral-500">LPC-S · RPT-S</span></div>
+    </div>
+    <div class="absolute top-2 md:top-6 right-2 md:-right-5 flex flex-col gap-2 z-[2]">
+      <div class="hero-badge bg-white px-4 py-2 rounded-full text-caption font-medium text-neutral-700 shadow-md flex items-center gap-2 whitespace-nowrap">🧩 Play Therapy</div>
+      <div class="hero-badge bg-white px-4 py-2 rounded-full text-caption font-medium text-neutral-700 shadow-md flex items-center gap-2 whitespace-nowrap">🐴 EquiPlay</div>
+      <div class="hero-badge bg-white px-4 py-2 rounded-full text-caption font-medium text-neutral-700 shadow-md flex items-center gap-2 whitespace-nowrap">🎨 Art Therapy</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- SERVICES -->
+<section class="py-16 md:py-24" id="services">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8">
+  <div class="reveal">
+  <div class="inline-flex items-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> Our Services</div>
+  <h2 class="font-display text-h2 font-medium text-neutral-900 mb-4">How we help children &amp; families</h2>
+  <p class="text-body text-neutral-600 max-w-[560px] mb-12">Every child communicates differently. We meet them where they are — through play, art, and connection.</p>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+    <div class="service-card relative overflow-hidden bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="service-icon w-[52px] h-[52px] rounded-lg flex items-center justify-center text-2xl mb-5 bg-green-100">🧩</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Play Therapy</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">Children play out feelings and experiences they aren't developmentally equipped to talk about — in a specially designed playroom, one-on-one with a trained therapist.</p>
+    </div>
+    <div class="service-card relative overflow-hidden bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="service-icon w-[52px] h-[52px] rounded-lg flex items-center justify-center text-2xl mb-5 bg-[#FFF3E0]">🐴</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">EquiPlay</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">Equine Interactive Play Therapy combines the power of play with connection to miniature horses, helping children ages 5–14 develop self-control, problem-solving, and resilience.</p>
+    </div>
+    <div class="service-card relative overflow-hidden bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="service-icon w-[52px] h-[52px] rounded-lg flex items-center justify-center text-2xl mb-5 bg-blue-50">🎨</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Art Therapy</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">In my therapy sessions, we’ll work to solve current problems and improve positive thinking and behavior. I will help you “re-frame” your reactions and provide you with valuable tools to cope with life’s obstacles. I’m confident you’ll find my personalized Couples Counseling beneficial and inspirational..</p>
+    </div>
+    <div class="service-card relative overflow-hidden bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="service-icon w-[52px] h-[52px] rounded-lg flex items-center justify-center text-2xl mb-5 bg-[#FDE8F0]">👨‍👩‍👧</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Parent Counseling</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">Every child is unique. We guide parents in discovering the best parenting techniques and strategies, and map out a family plan to equip, encourage, and empower each child.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ABOUT PLAY THERAPY -->
+<section class="py-16 md:py-24 bg-green-50" id="about">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 items-center">
+  <div class="reveal relative">
+    <div class="w-full h-[280px] md:h-[440px] rounded-2xl overflow-hidden shadow-lg">
+      <img src="images/sandy-millar-nuS2GDpCDoI-unsplash-Recovered.jpg" alt="Child playing with toy cars" class="w-full h-full object-cover" />
+    </div>
+    <div class="absolute w-[120px] h-[120px] bg-green-400 rounded-[0_40%_40%_40%] -bottom-4 -right-4 opacity-15 -z-[1]"></div>
+  </div>
+  <div class="max-w-[520px]">
+    <div class="inline-flex items-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> The Power of Play</div>
+    <h2 class="font-display text-h2 font-medium text-neutral-900 mb-4">Helping families through Play Therapy</h2>
+    <div class="bg-white border-l-[3px] border-green-500 px-6 py-5 rounded-r-md mb-8">
+      <p class="text-body text-neutral-800 font-medium leading-relaxed">Sandplay. Art. Equine-assisted play. Role playing. Games. This is the language of children.</p>
+    </div>
+    <p class="text-body text-neutral-700 leading-[1.75] mb-6">Children are designed to play. Long before they can talk, they learn to interact with their world through curious exploration — through playing. In play therapy, children are given the opportunity to play out feelings and experiences they are not developmentally equipped to talk about.</p>
+    <p class="text-body text-neutral-700 leading-[1.75] mb-6">Play therapy is a research-based discipline used for decades. Sessions take place in a specially equipped playroom, mostly one-on-one — sometimes child-led, sometimes guided by the therapist. Play therapy helps children develop self-control, problem-solving skills, accept responsibility, and manage the unmanageable in their worlds.</p>
+    <a href="http://www.a4pt.org/ps.index.cfm?ID=1653" class="btn-interactive inline-flex items-center gap-2 font-body font-semibold text-caption px-6 py-3 rounded-full bg-white text-blue-700 border-2 border-blue-300 transition-all duration-250 ease-out hover:bg-blue-50 hover:border-blue-500" target="_blank" rel="noopener">Learn more about Play Therapy <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17l9.2-9.2M17 17V7H7"/></svg></a>
+  </div>
+</div>
+</section>
+
+<!-- CORE VALUES -->
+<section class="py-16 md:py-24" id="values">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8">
+  <div class="reveal text-center max-w-[600px] mx-auto mb-12">
+    <div class="inline-flex items-center justify-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> What We Believe</div>
+    <h2 class="font-display text-h2 font-medium text-neutral-900">Our Core Values</h2>
+    <p class="text-body text-neutral-600 mt-4">Everything we do is rooted in these principles — they guide every session, every interaction, and every relationship we build.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">01</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Therapeutic Process</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">The therapeutic process is a relationship that takes, time, energy, and investment from both sides. We believe that play is the natural language of children, and they should always be allowed to express themselves through therapeutic play.</p>
+    </div>
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">02</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Overcoming Obstacles</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">We believe in our clients' capacity to overcome obstacles in their lives — and we walk alongside them every step of the way.</p>
+    </div>
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">03</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">People</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">We believe everyone is valuable to God and His Kingdom. We commit to making all of our interactions — with clients or otherwise — with this in mind.</p>
+    </div>
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">04</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">High Trust &amp; Safety</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">High levels of trust are essential to the therapeutic process and hold it as our responsibility to maintain this trust by acting in trustworthy ways. We value an environment of safety and security so clients feel free to explore and express themselves completely.</p>
+    </div>
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">05</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Child &amp; Adolescent Focus</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">We intentionally focus on the child/adolescent in the family and serve as their advocate and ally. We commit to providing a session and environment that communicate to the child/adolescent that they are our number one focus and priority.</p>
+    </div>
+    <div class="card-lift bg-white border border-neutral-100 rounded-xl p-8 hover:border-green-200">
+      <div class="font-display text-h2 font-light text-green-300 mb-3 leading-none">06</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Family Involvement</h3>
+      <p class="text-body-sm text-neutral-600 leading-relaxed">The best results are achieved when the family system as a whole is involved in the therapeutic process. We commit to involving parents in the process and equipping them with resources that enable them to employ knowledge gained during that process into their home environments.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- WHAT TO EXPECT -->
+<section class="py-16 md:py-24 bg-green-50" id="expect">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8">
+  <div class="reveal text-center max-w-[600px] mx-auto mb-12">
+    <div class="inline-flex items-center justify-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> Getting Started</div>
+    <h2 class="font-display text-h2 font-medium text-neutral-900">What should I expect?</h2>
+    <p class="text-body text-neutral-600 mt-4">From your first call to your first session — here's what the process looks like.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-8 relative mt-4">
+    <!-- Connector line (desktop only) -->
+    <div class="hidden md:block absolute top-7 left-[60px] right-[60px] h-0.5 bg-green-300 z-0"></div>
+    <div class="relative z-[1] grid grid-cols-[56px_1fr] md:grid-cols-1 gap-4 md:gap-0 text-left md:text-center">
+      <div class="w-14 h-14 rounded-full bg-white border-[3px] border-green-400 flex items-center justify-center md:mx-auto md:mb-5 font-display font-bold text-body text-green-900 shadow-sm">1</div>
+      <div><h3 class="font-display font-semibold text-body text-neutral-900 mb-2">Reach Out</h3><p class="text-body-sm text-neutral-600 leading-relaxed md:max-w-[220px] md:mx-auto">Call, email, or fill out the form below to schedule. Let us know if you'd like a specific therapist to contact you.</p></div>
+    </div>
+    <div class="relative z-[1] grid grid-cols-[56px_1fr] md:grid-cols-1 gap-4 md:gap-0 text-left md:text-center">
+      <div class="w-14 h-14 rounded-full bg-white border-[3px] border-green-400 flex items-center justify-center md:mx-auto md:mb-5 font-display font-bold text-body text-green-900 shadow-sm">2</div>
+      <div><h3 class="font-display font-semibold text-body text-neutral-900 mb-2">Paperwork &amp; Intake</h3><p class="text-body-sm text-neutral-600 leading-relaxed md:max-w-[220px] md:mx-auto">When you arrive, you'll complete initial paperwork covering office policies and important background information.</p></div>
+    </div>
+    <div class="relative z-[1] grid grid-cols-[56px_1fr] md:grid-cols-1 gap-4 md:gap-0 text-left md:text-center">
+      <div class="w-14 h-14 rounded-full bg-white border-[3px] border-green-400 flex items-center justify-center md:mx-auto md:mb-5 font-display font-bold text-body text-green-900 shadow-sm">3</div>
+      <div><h3 class="font-display font-semibold text-body text-neutral-900 mb-2">Parent-Only Session</h3><p class="text-body-sm text-neutral-600 leading-relaxed md:max-w-[220px] md:mx-auto">The first session is with parents/caregivers only, so we can gather a case history and learn about the child's home and social life.</p></div>
+    </div>
+    <div class="relative z-[1] grid grid-cols-[56px_1fr] md:grid-cols-1 gap-4 md:gap-0 text-left md:text-center">
+      <div class="w-14 h-14 rounded-full bg-white border-[3px] border-green-400 flex items-center justify-center md:mx-auto md:mb-5 font-display font-bold text-body text-green-900 shadow-sm">4</div>
+      <div><h3 class="font-display font-semibold text-body text-neutral-900 mb-2">Therapy Begins</h3><p class="text-body-sm text-neutral-600 leading-relaxed md:max-w-[220px] md:mx-auto">Sessions include one-on-one child time, parent sessions, and family sessions — tailored to your family's needs.</p></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- MEET THE THERAPIST -->
+<section class="py-16 md:py-24" id="therapist">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-[400px_1fr] gap-10 md:gap-16 items-start">
+  <div class="relative">
+    <div class="reveal relative">
+      <div class="w-full h-[280px] md:h-[440px] rounded-2xl overflow-hidden shadow-lg">
+        <img src="images/DC8B4A20-00A9-4203-A067-E9D181556FDF_edited_edited_edited_edited.png" alt="Child playing with toy cars" class="w-full h-full object-cover" />
+      </div>
+      <div class="absolute w-[120px] h-[120px] bg-green-400 rounded-[0_40%_40%_40%] -bottom-4 -right-4 opacity-15 -z-[1]"></div>
+    </div>
+    <div class="absolute -bottom-4 left-6 right-6 bg-white p-5 px-6 rounded-lg shadow-lg text-center">
+      <div class="font-display text-h3 font-semibold text-neutral-900">Emily Suggs</div>
+      <div class="text-caption text-green-800 font-semibold mt-1">LPC-S · RPT-S</div>
+    </div>
+  </div>
+  <div class="pt-4">
+    <div class="inline-flex items-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> Meet Your Therapist</div>
+    <h2 class="font-display text-h2 font-medium text-neutral-900 mb-4">A licensed professional to guide you</h2>
+    <p class="text-body text-neutral-700 leading-[1.75] mb-8">Emily is a Licensed Professional Counselor Supervisor (LPC-S), a Registered Play Therapist Supervisor (RPT-S), and the owner of Upside Down Therapy LLC. She received her Master's degree in Marriage and Family Counseling from Southwestern Baptist Theological Seminary in Fort Worth, Texas. She is married and a mom to two daughters. Emily specializes in anxiety-related issues, life change, grief, divorce, and parenting.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex items-start gap-3 p-4 bg-green-50 rounded-md">
+        <svg class="w-5 h-5 shrink-0 text-green-800 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="text-body-sm text-neutral-700 font-medium">Licensed Professional Counselor Supervisor</span>
+      </div>
+      <div class="flex items-start gap-3 p-4 bg-green-50 rounded-md">
+        <svg class="w-5 h-5 shrink-0 text-green-800 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="text-body-sm text-neutral-700 font-medium">Registered Play Therapist Supervisor</span>
+      </div>
+      <div class="flex items-start gap-3 p-4 bg-green-50 rounded-md">
+        <svg class="w-5 h-5 shrink-0 text-green-800 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="text-body-sm text-neutral-700 font-medium">Master's in Marriage &amp; Family Counseling</span>
+      </div>
+      <div class="flex items-start gap-3 p-4 bg-green-50 rounded-md">
+        <svg class="w-5 h-5 shrink-0 text-green-800 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span class="text-body-sm text-neutral-700 font-medium">Specializes in anxiety, grief, divorce &amp; parenting</span>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- INSURANCE & PAYMENT -->
+<section class="py-16 md:py-24 bg-green-50" id="insurance">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8">
+  <div class="reveal text-center max-w-[600px] mx-auto mb-12">
+    <div class="inline-flex items-center justify-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-800 mb-4"><span class="leaf"></span> Practical Details</div>
+    <h2 class="font-display text-h2 font-medium text-neutral-900">Insurance, Payment &amp; Policies</h2>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 mb-10">
+    <div class="card-lift bg-white rounded-xl p-8 shadow-sm">
+      <div class="w-11 h-11 rounded-md flex items-center justify-center text-xl mb-4 bg-blue-50">🛡️</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Insurance Accepted</h3>
+      <div class="text-body-sm text-neutral-600 leading-relaxed"><p> Initial sessions are billed at the out-of-pocket rate until insurance benefits are established. We file <strong class="text-neutral-800 font-semibold">BCBS, BCBS Federal, and BCBS State</strong> directly for you.</p><p class="mt-3">For other insurers, we provide a receipt and self-filing packet. It's your responsibility to verify your coverage — contact our office with questions.</p></div>
+    </div>
+    <div class="card-lift bg-white rounded-xl p-8 shadow-sm">
+      <div class="w-11 h-11 rounded-md flex items-center justify-center text-xl mb-4 bg-green-100">💳</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Payment</h3>
+      <div class="text-body-sm text-neutral-600 leading-relaxed"><p>We accept <strong class="text-neutral-800 font-semibold">cash, checks, and credit cards</strong> in the office.</p><p class="mt-3">For specific fee information, please contact our office to discuss your situation.</p></div>
+    </div>
+    <div class="card-lift bg-white rounded-xl p-8 shadow-sm">
+      <div class="w-11 h-11 rounded-md flex items-center justify-center text-xl mb-4 bg-[#FFF3E0]">📋</div>
+      <h3 class="font-display text-h4 font-semibold text-neutral-900 mb-3">Cancellation Policy</h3>
+      <div class="text-body-sm text-neutral-600 leading-relaxed"><p>The <strong class="text-neutral-800 font-semibold">full session fee</strong> will be charged for failure to attend without <strong class="text-neutral-800 font-semibold">24-hour advanced notice</strong> of cancellation.</p><p class="mt-3">We understand life happens — just give us a call as soon as you know.</p></div>
+    </div>
+  </div>
+  <div class="max-w-[800px] mx-auto">
+    <h3 class="font-display text-h3 font-medium text-center mb-8">Frequently Asked Questions</h3>
+    <details class="faq-item border-b border-neutral-200">
+      <summary class="w-full flex items-center justify-between py-5 text-body font-semibold text-neutral-800 cursor-pointer hover:text-green-900">How do I know if my insurance covers therapy sessions?<svg class="w-6 h-6 shrink-0 text-neutral-400 transition-transform duration-250 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+      <div class="pb-5 text-body-sm text-neutral-600 leading-[1.75] max-w-[680px]">Check your coverage by asking your insurer: Do I have mental health benefits? What is my deductible, and has it been met? How many sessions per year does my plan cover? What is the coverage amount per session? Is approval required from my primary care physician?</div>
+    </details>
+    <details class="faq-item border-b border-neutral-200">
+      <summary class="w-full flex items-center justify-between py-5 text-body font-semibold text-neutral-800 cursor-pointer hover:text-green-900">What if my insurance is not BCBS?<svg class="w-6 h-6 shrink-0 text-neutral-400 transition-transform duration-250 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+      <div class="pb-5 text-body-sm text-neutral-600 leading-[1.75] max-w-[680px]">If you have a different insurance provider, we can provide you with a receipt and a self-filing insurance packet so you can file the sessions yourself with your insurer.</div>
+    </details>
+    <details class="faq-item border-b border-neutral-200">
+      <summary class="w-full flex items-center justify-between py-5 text-body font-semibold text-neutral-800 cursor-pointer hover:text-green-900">Why is the initial session with parents only?<svg class="w-6 h-6 shrink-0 text-neutral-400 transition-transform duration-250 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+      <div class="pb-5 text-body-sm text-neutral-600 leading-[1.75] max-w-[680px]">This gives us an opportunity to gather a thorough case history and learn about the dynamics of the child's home and social environments. In some cases, we may meet with parents/caregivers for several sessions before bringing the child into a session.</div>
+    </details>
+    <details class="faq-item border-b border-neutral-200">
+      <summary class="w-full flex items-center justify-between py-5 text-body font-semibold text-neutral-800 cursor-pointer hover:text-green-900">What types of sessions will my family have?<svg class="w-6 h-6 shrink-0 text-neutral-400 transition-transform duration-250 ease-out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg></summary>
+      <div class="pb-5 text-body-sm text-neutral-600 leading-[1.75] max-w-[680px]">Because of our training in family therapy, you can expect sessions with just the child, just the parents, and the family as a whole — tailored to your family's specific needs and goals.</div>
+    </details>
+  </div>
+</div>
+</section>
+
+<!-- CONTACT -->
+<section class="py-16 md:py-24 bg-blue-900 text-white relative overflow-hidden" id="contact">
+<div class="blob w-[500px] h-[500px] bg-blue-400 opacity-[.08] absolute -top-[150px] -right-[100px]"></div>
+<div class="blob w-[350px] h-[350px] bg-blue-400 opacity-[.08] absolute -bottom-[100px] -left-[80px]"></div>
+<div class="max-w-[1200px] mx-auto px-5 md:px-8 grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-16 relative z-[1]">
+  <div>
+    <div class="inline-flex items-center gap-2 text-overline font-semibold uppercase tracking-widest text-green-400 mb-4"><span class="leaf" style="background:#9BC847"></span> Get In Touch</div>
+    <h2 class="font-display text-h2 font-medium mb-4">Ready to take the first step?</h2>
+    <p class="text-body text-blue-200 mb-10 max-w-[400px]">Contact us today to learn more and schedule an appointment. We'd love to hear from you.</p>
+    <div class="flex flex-col gap-6">
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-md bg-white/[.08] flex items-center justify-center shrink-0 text-green-400">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="text-body text-white leading-relaxed">101 GT Thames Suite 2-A<span class="block text-body-sm text-blue-300 mt-1">Starkville, MS 39759</span></div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-md bg-white/[.08] flex items-center justify-center shrink-0 text-green-400">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <div class="text-body text-white leading-relaxed"><a href="mailto:esuggslpc@gmail.com">esuggslpc@gmail.com</a><span class="block text-body-sm text-blue-300 mt-1">We typically respond within 24 hours</span></div>
+      </div>
+      <div class="flex items-start gap-4">
+        <div class="w-11 h-11 rounded-md bg-white/[.08] flex items-center justify-center shrink-0 text-green-400">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        </div>
+        <div class="text-body text-white leading-relaxed">(662) 338-4988 (Emily)<span class="block text-body-sm text-blue-300 mt-1">(662) 270-5877 (Destiny)</span></div>
+      </div>
+    </div>
+    <div class="flex gap-3 mt-8">
+      <a href="https://www.facebook.com/UpsideDownFamilyTherapy" aria-label="Facebook" target="_blank" rel="noopener" class="icon-btn w-11 h-11 rounded-md bg-white/[.08] flex items-center justify-center text-white hover:bg-white/[.15]"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+      <a href="https://maps.app.goo.gl/tVzchv9rLFtyGJiq7" aria-label="Google Maps" target="_blank" rel="noopener" class="icon-btn w-11 h-11 rounded-md bg-white/[.08] flex items-center justify-center text-white hover:bg-white/[.15]"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 7.94 8.5 15.5 8.5 15.5s8.5-7.56 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 12c-1.93 0-3.5-1.57-3.5-3.5S10.07 5 12 5s3.5 1.57 3.5 3.5S13.93 12 12 12z"/></svg></a>
+    </div>
+  </div>
+  <div class="input-focus-ring bg-white/[.06] border border-white/10 rounded-xl p-8 md:p-10 backdrop-blur-[8px]">
+    <h3 class="font-display text-h3 font-medium mb-6">Request an Appointment</h3>
+    <form id="contact-form" action="#" method="post">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="mb-5"><label class="block text-body-sm font-medium text-blue-200 mb-2" for="name">Full Name</label><input class="w-full p-4 bg-white/[.06] border border-white/15 rounded-md text-white font-body text-body transition-all duration-150 ease-out placeholder:text-blue-400 focus:outline-none focus:border-green-400 focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(141,198,63,.2)]" type="text" id="name" placeholder="Your name" autocomplete="name" required></div>
+        <div class="mb-5"><label class="block text-body-sm font-medium text-blue-200 mb-2" for="phone">Phone Number</label><input class="w-full p-4 bg-white/[.06] border border-white/15 rounded-md text-white font-body text-body transition-all duration-150 ease-out placeholder:text-blue-400 focus:outline-none focus:border-green-400 focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(141,198,63,.2)]" type="tel" id="phone" placeholder="(555) 123-4567" autocomplete="tel"></div>
+      </div>
+      <div class="mb-5"><label class="block text-body-sm font-medium text-blue-200 mb-2" for="email">Email Address</label><input class="w-full p-4 bg-white/[.06] border border-white/15 rounded-md text-white font-body text-body transition-all duration-150 ease-out placeholder:text-blue-400 focus:outline-none focus:border-green-400 focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(141,198,63,.2)]" type="email" id="email" placeholder="you@example.com" autocomplete="email" required></div>
+      <div class="mb-5"><label class="block text-body-sm font-medium text-blue-200 mb-2" for="contact-method">Preferred Contact Method</label><select class="form-select-arrow w-full p-4 bg-white/[.06] border border-white/15 rounded-md text-white font-body text-body transition-all duration-150 ease-out focus:outline-none focus:border-green-400 focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(141,198,63,.2)]" id="contact-method"><option value="" class="bg-blue-900 text-white">Select one...</option><option value="phone" class="bg-blue-900 text-white">Phone Call</option><option value="email" class="bg-blue-900 text-white">Email</option><option value="either" class="bg-blue-900 text-white">Either is fine</option></select></div>
+      <div class="mb-5"><label class="block text-body-sm font-medium text-blue-200 mb-2" for="message">Tell us how we can help</label><textarea class="w-full p-4 bg-white/[.06] border border-white/15 rounded-md text-white font-body text-body transition-all duration-150 ease-out min-h-[100px] resize-y placeholder:text-blue-400 focus:outline-none focus:border-green-400 focus:bg-white/10 focus:shadow-[0_0_0_3px_rgba(141,198,63,.2)]" id="message" placeholder="Brief description of what brings you here..."></textarea></div>
+      <div class="flex items-center gap-3 p-4 bg-[rgba(141,198,63,.08)] border border-[rgba(141,198,63,.2)] rounded-md mb-6">
+        <input type="checkbox" id="callback" name="callback" class="w-[18px] h-[18px] accent-green-500 shrink-0">
+        <label for="callback" class="text-body-sm text-blue-100 cursor-pointer">I'd like Emily to contact me directly</label>
+      </div>
+      <button type="submit" class="btn-interactive btn-cta-green w-full inline-flex items-center justify-center gap-2 font-body font-semibold text-body px-10 py-5 rounded-full bg-green-800 text-white shadow-[0_4px_16px_rgba(42,90,16,.3)] hover:bg-green-900">Send Request <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></button>
+    </form>
+  </div>
+</div>
+</section>
+
+ </main>
+<!-- FOOTER -->
+<footer class="bg-neutral-900 text-neutral-400 py-12">
+<div class="max-w-[1200px] mx-auto px-5 md:px-8">
+  <div class="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-8 md:gap-10">
+    <div class="max-w-[280px]">
+      <div class="font-display text-body font-semibold text-white mb-3">Upside Down Family Therapy</div>
+      <p class="text-body-sm text-neutral-500 leading-relaxed mb-5">Play Therapy, Expressive Art Therapy, and Parent Consultation for children and families in Starkville, Mississippi.</p>
+      <div class="flex gap-3">
+        <a href="https://www.facebook.com/UpsideDownFamilyTherapy" aria-label="Facebook" class="text-neutral-400" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+        <a href="https://maps.google.com/?cid=174850312730753041" aria-label="Google Maps" class="text-neutral-400" target="_blank" rel="noopener"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C7.31 0 3.5 3.81 3.5 8.5c0 7.94 8.5 15.5 8.5 15.5s8.5-7.56 8.5-15.5C20.5 3.81 16.69 0 12 0zm0 12c-1.93 0-3.5-1.57-3.5-3.5S10.07 5 12 5s3.5 1.57 3.5 3.5S13.93 12 12 12z"/></svg></a>
+      </div>
+    </div>
+    <div>
+      <h4 class="text-body-sm font-semibold text-white mb-4">Navigate</h4>
+      <ul class="flex flex-col gap-3 list-none">
+        <li><a href="#services" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Services</a></li>
+        <li><a href="#about" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">About Play Therapy</a></li>
+        <li><a href="#values" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Our Values</a></li>
+        <li><a href="#expect" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">What to Expect</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-body-sm font-semibold text-white mb-4">Connect</h4>
+      <ul class="flex flex-col gap-3 list-none">
+        <li><a href="#therapist" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Meet Emily</a></li>
+        <li><a href="#insurance" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Insurance &amp; Payment</a></li>
+        <li><a href="#contact" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Contact Us</a></li>
+        <!-- <li><a href="#" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">Shop</a></li> -->
+      </ul>
+    </div>
+    <div>
+      <h4 class="text-body-sm font-semibold text-white mb-4">Location</h4>
+      <ul class="flex flex-col gap-3 list-none">
+        <li class="text-neutral-400 text-body-sm leading-relaxed">101 GT Thames Suite 2-A<br>Starkville, MS 39759</li>
+        <li><a href="tel:6623384988" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">(662) 338-4988</a></li>
+        <li><a href="mailto:esuggslpc@gmail.com" class="footer-link text-body-sm text-neutral-400 hover:text-green-400">esuggslpc@gmail.com</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="border-t border-neutral-800 pt-6 mt-10 flex flex-col md:flex-row justify-between items-center gap-3 text-center md:text-left text-caption">
+    <span>&copy; 2026 Upside Down Family Therapy. All rights reserved.</span>
+    <span class="text-neutral-600">Starkville, Mississippi</span>
+  </div>
+</div>
+</footer>
+
+<!-- MOBILE SCROLL CTA -->
+<div class="scroll-cta fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-100 p-4 hidden justify-center z-[90] shadow-[0_-4px_16px_rgba(0,0,0,.06)]" id="scrollCta">
+  <a href="#contact" class="btn-interactive btn-cta w-full max-w-[360px] inline-flex items-center justify-center gap-2 font-body font-semibold text-body px-10 py-5 rounded-full bg-blue-600 text-white shadow-[0_4px_16px_rgba(58,109,158,.3)] hover:bg-blue-700">Schedule an Appointment</a>
+</div>
+
+<script>
+const header=document.getElementById('header');
+const scrollCta=document.getElementById('scrollCta');
+const mobileNav=document.getElementById('mobileNav');
+const hamburger=document.getElementById('menuToggle');
+
+function setMobileMenuOpen(isOpen){
+  if(!header||!mobileNav||!hamburger) return;
+  const navLinks=mobileNav.querySelectorAll('.mobile-nav-link');
+  const mobilePhone=mobileNav.querySelector('.mobile-phone');
+  header.classList.toggle('header--menu-open',isOpen);
+  hamburger.setAttribute('aria-label',isOpen?'Close menu':'Open menu');
+  hamburger.setAttribute('aria-expanded',isOpen?'true':'false');
+  mobileNav.style.opacity=isOpen?'1':'0';
+  mobileNav.style.visibility=isOpen?'visible':'hidden';
+  mobileNav.style.transform=isOpen?'translateY(0)':'translateY(-8px)';
+  mobileNav.style.pointerEvents=isOpen?'auto':'none';
+  navLinks.forEach((link,index)=>{
+    link.style.opacity=isOpen?'1':'0';
+    link.style.transform=isOpen?'translateY(0)':'translateY(-4px)';
+    link.style.transitionDelay=isOpen?`${0.05+(index*0.03)}s`:'0s';
+  });
+  if(mobilePhone){ mobilePhone.style.display=isOpen?'flex':'none'; }
+  document.body.style.overflow=isOpen?'hidden':'';
+}
+
+window.addEventListener('scroll',()=>{
+  if(header) header.classList.toggle('shadow-sm',window.scrollY>10);
+  if(window.innerWidth<=768&&scrollCta) scrollCta.classList.toggle('visible',window.scrollY>600);
+});
+if(hamburger){
+  hamburger.addEventListener('click',()=>{
+    const isOpen=hamburger.getAttribute('aria-expanded')==='true';
+    setMobileMenuOpen(!isOpen);
+  });
+}
+setMobileMenuOpen(false);
+document.getElementById('contact-form')?.addEventListener('submit',function(e){
+  e.preventDefault();
+  // Form submission can be wired to your backend or email service here
+});
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',function(e){
+    if(this.getAttribute('href')==='#main-content') return;
+    const href=this.getAttribute('href');
+    if(href==='#')return;
+    e.preventDefault();
+    const t=document.querySelector(href);
+    if(t){window.scrollTo({top:t.getBoundingClientRect().top+window.pageYOffset-80,behavior:'smooth'})}
+    setMobileMenuOpen(false);
+  });
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth>=768){ setMobileMenuOpen(false); }
+});
+
+const interactiveButtons=document.querySelectorAll('.btn-interactive,.btn-cta,.btn-outline,.btn-cta-green');
+function spawnButtonRipple(el,x,y){
+  const rect=el.getBoundingClientRect();
+  const ripple=document.createElement('span');
+  const size=Math.max(rect.width,rect.height)*1.15;
+  ripple.className='btn-ripple';
+  ripple.style.width=`${size}px`;
+  ripple.style.height=`${size}px`;
+  ripple.style.left=`${x}px`;
+  ripple.style.top=`${y}px`;
+  el.appendChild(ripple);
+  ripple.addEventListener('animationend',()=>ripple.remove(),{once:true});
+}
+interactiveButtons.forEach((btn)=>{
+  btn.addEventListener('pointerdown',(e)=>{
+    const rect=btn.getBoundingClientRect();
+    spawnButtonRipple(btn,e.clientX-rect.left,e.clientY-rect.top);
+  });
+  btn.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'||e.key===' '){
+      const rect=btn.getBoundingClientRect();
+      spawnButtonRipple(btn,rect.width/2,rect.height/2);
+    }
+  });
+});
+
+</script>
+<script type="module">
+import { animate, inView } from "https://cdn.jsdelivr.net/npm/motion@12.23.24/+esm";
+
+const prefersReducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+if(!prefersReducedMotion){
+  document.querySelectorAll('.btn-interactive').forEach((btn)=>{
+    let pressed=false;
+    const lift=()=>animate(btn,{ y:-3, scale:1.01 },{ duration:0.22, easing:[0.22,1,0.36,1] });
+    const rest=()=>animate(btn,{ y:0, scale:1 },{ duration:0.2, easing:[0.22,1,0.36,1] });
+    const press=()=>animate(btn,{ y:0, scale:0.98 },{ duration:0.12, easing:[0.4,0,0.2,1] });
+
+    btn.addEventListener('pointerenter',lift);
+    btn.addEventListener('pointerleave',()=>{ pressed=false; rest(); });
+    btn.addEventListener('pointerdown',()=>{ pressed=true; press(); });
+    btn.addEventListener('pointerup',()=>{ pressed=false; if(btn.matches(':hover')){ lift(); } else { rest(); } });
+    btn.addEventListener('blur',()=>{ if(!pressed){ rest(); } });
+  });
+
+  document.querySelectorAll('.card-lift,.service-card').forEach((card)=>{
+    card.addEventListener('pointerenter',()=>{
+      animate(card,{ y:-8 },{ duration:0.28, easing:[0.22,1,0.36,1] });
+    });
+    card.addEventListener('pointerleave',()=>{
+      animate(card,{ y:0 },{ duration:0.22, easing:[0.22,1,0.36,1] });
+    });
+  });
+
+  inView('.reveal',(el)=>{
+    animate(
+      el,
+      { opacity:[0,1], y:[20,0] },
+      { duration:0.55, easing:[0.22,1,0.36,1], delay:0.02 }
+    );
+  },{ margin:'-8% 0px -8% 0px' });
+}
+</script>
+</body>
+</html>
